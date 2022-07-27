@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="com.jaewon.todolist.domain.todo.TodoRepository">
+	<insert id="save" parameterType="com.jaewon.todolist.domain.todo.Todo">
+		insert into
+			todo_mst
+		values(
+			0,
+			#{todo_content},
+			0,
+			#{importance_flag},
+			now(),
+			now()
+		);
+	</insert>
+	<select id="getTodoListOfIndex" parameterType="hashmap" resultType="com.jaewon.todolist.domain.todo.Todo">
+		select
+			tm.todo_code,
+			
+			tm.todo_content,
+			tm.todo_complete,
+			tm.importance_flag,
+			
+			tt.total_count,
+			
+			tm.create_date,
+			tm.update_date
+		from
+			todo_mst tm
+			LEFT OUTER JOIN (select
+												COUNT(*) AS total_count
+										 from
+												todo_mst) tt ON (1 = 1)
+		order by
+			todo_code desc
+		limit #{index}, #{count}
+	</select>
+	<select id="getImportanceTodoListOfIndex" parameterType="hashmap" resultType="com.jaewon.todolist.domain.todo.Todo">
+		SELECT
+			tm.todo_code,
+			
+			tm.todo_content,
+			tm.todo_complete,
+			tm.importance_flag,
+			
+			tt.total_count,
+			
+			tm.create_date,
+			tm.update_date
+		FROM
+			todo_mst tm
+			LEFT OUTER JOIN (select
+										COUNT(*) AS total_count
+									from
+										todo_mst
+									where
+										importance_flag = 1) tt ON (1 = 1)
+		where
+			importance_flag = 1
+		ORDER BY
+			todo_code desc
+		LIMIT #{index}, #{count}
+	</select>
+	<update id="updateTodoComplete" parameterType="Integer">
+		UPDATE
+			todo_mst
+		SET
+			todo_complete = CASE when todo_complete = '0' then 1 ELSE 0 END
+		WHERE
+			todo_code = #{todo_code}
+	</update>
+	<update id="updateTodoImportance" parameterType="Integer">
+		UPDATE
+			todo_mst
+		SET
+			importance_flag = CASE when importance_flag = '0' then 1 ELSE 0 END
+		WHERE
+			todo_code = #{todo_code}
+	</update>
+	
+	<update id="updateTodoByTodoCode" parameterType="com.jaewon.todolist.domain.todo.Todo">
+		update
+			todo_mst
+		set
+			todo_content = #{todo_content},
+			update_date = now()
+		where
+			todo_code = #{todo_code}
+	</update>
+	<delete id="remove" parameterType="integer">
+		delete
+		from
+			todo_mst
+		where
+			todo_code = #{todo_code}
+	</delete>
+</mapper>

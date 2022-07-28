@@ -16,7 +16,7 @@
 			now()
 		);
 	</insert>
-	<select id="getTodoListOfIndex" parameterType="hashmap" resultType="com.jaewon.todolist.domain.todo.Todo">
+	<select id="getTodoList" parameterType="hashmap" resultType="com.jaewon.todolist.domain.todo.Todo">
 		select
 			tm.todo_code,
 			
@@ -25,6 +25,7 @@
 			tm.importance_flag,
 			
 			tt.total_count,
+			tc.incomplete_count,
 			
 			tm.create_date,
 			tm.update_date
@@ -33,12 +34,52 @@
 			LEFT OUTER JOIN (select
 												COUNT(*) AS total_count
 										 from
-												todo_mst) tt ON (1 = 1)
+												todo_mst
+										where
+										<choose>
+											<when test='type.equals("importance")'>
+												importance_flag = 1	
+											</when>
+											<when test='type.equals("complete")'>
+												todo_complete = 1
+											</when>
+											<when test='type.equals("incomplete")'>
+												todo_complete = 0
+											</when>
+											<otherwise>
+												1 = 1
+											</otherwise>
+										</choose>		
+										) tt ON (1 = 1)
+			LEFT OUTER JOIN (select
+											COUNT(todo_complete) AS incomplete_count
+										from
+											todo_mst
+										where
+											todo_complete = 0
+											<if test='type.equals("importance")'>
+													and importance_flag = 1	
+											</if>) tc ON (1 = 1)
+		where
+			<choose>
+				<when test='type.equals("importance")'>
+					importance_flag = 1	
+				</when>
+				<when test='type.equals("complete")'>
+					todo_complete = 1
+				</when>
+				<when test='type.equals("incomplete")'>
+					todo_complete = 0
+				</when>
+				<otherwise>
+					1 = 1
+				</otherwise>
+			</choose>
 		order by
 			todo_code desc
 		limit #{index}, #{count}
 	</select>
-	<select id="getImportanceTodoListOfIndex" parameterType="hashmap" resultType="com.jaewon.todolist.domain.todo.Todo">
+	<!-- <select id="getImportanceTodoListOfIndex" parameterType="hashmap" resultType="com.jaewon.todolist.domain.todo.Todo">
 		SELECT
 			tm.todo_code,
 			
@@ -47,6 +88,7 @@
 			tm.importance_flag,
 			
 			tt.total_count,
+			tc.incomplete_count,
 			
 			tm.create_date,
 			tm.update_date
@@ -58,12 +100,26 @@
 										todo_mst
 									where
 										importance_flag = 1) tt ON (1 = 1)
+			left outer join (select
+										count(tm2.todo_complete) as incomplete_count
+									from
+										(select
+											todo_complete
+										from
+											todo_mst
+										where
+											importance_flag = 1
+										order by
+											todo_code desc
+										limit 0, #{count2}) tm2
+									where
+										todo_complete = 0) tc on (1=1)
 		where
 			importance_flag = 1
 		ORDER BY
 			todo_code desc
 		LIMIT #{index}, #{count}
-	</select>
+	</select> -->
 	<update id="updateTodoComplete" parameterType="Integer">
 		UPDATE
 			todo_mst

@@ -39,24 +39,29 @@ public class TodoServiceImpl implements TodoService {
 	}
 
 	@Override
-	public List<TodoListRespDto> getTodoList(int page, int contentCount) throws Exception {
-		List<Todo> todoList = todoRepository.getTodoListOfIndex(createGetTodoListMap(page, contentCount));
+	public List<TodoListRespDto> getTodoList(String type, int page, int contentCount) throws Exception {
+		List<Todo> todoList = todoRepository.getTodoList(createGetTodoListMap(type, page, contentCount));
 			
 		return createTodoListRespDtos(todoList);
 	}
 
-	@Override
-	public List<TodoListRespDto> getImportanceTodoList(int page, int contentCount) throws Exception {
-		
-		List<Todo> todoList = todoRepository.getImportanceTodoListOfIndex(createGetTodoListMap(page, contentCount));
-		
-		return createTodoListRespDtos(todoList);
-	}
+	/*
+	 * @Override public List<TodoListRespDto> getImportanceTodoList(int page, int
+	 * contentCount) throws Exception {
+	 * 
+	 * List<Todo> todoList =
+	 * todoRepository.getImportanceTodoListOfIndex(createGetTodoListMap(page,
+	 * contentCount));
+	 * 
+	 * return createTodoListRespDtos(todoList); }
+	 */
 	
-	private Map<String, Object> createGetTodoListMap(int page, int contentCount) {
+	private Map<String, Object> createGetTodoListMap(String type, int page, int contentCount) {
 		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("index", (page - 1) * contentCount);
+		map.put("type", type);
+		map.put("index", (page - 1) * contentCount); // if(page ==1 && contentCount == 10) -> 0 * 10
 		map.put("count", contentCount);
+//		map.put("count2", page * contentCount);
 		return map;
 	}
 	

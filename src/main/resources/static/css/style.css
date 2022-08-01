@@ -13,3 +13,21 @@
 ul {
     list-style-type: none;
 }
+
+html {
+    height: 100%;
+}
+
+body {
+    background-color: #fafafa;
+    height: 100%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.visible {
+    display: none;
+}

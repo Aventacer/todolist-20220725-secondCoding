@@ -126,7 +126,7 @@ main {
     background-color: #dbdbdb40;
 }
 
-.incomplete-count-next {
+.incomplete-count-text {
     margin: 20px 0px 40px;
 }
 
@@ -185,7 +185,6 @@ main {
     background-color: #dbdbdb70;
     
     right: 28px;
-
     cursor: pointer;
 }
 
@@ -224,11 +223,13 @@ main {
 
 }
 
+.todo-content:not(:last-of-type) {
+    margin-bottom: 10px;		
+}
+
 .todo-content {
     display: flex;
     align-items: center;
-
-    margin-bottom: 10px;
 
     border-bottom: 1px solid #dbdbdb;
     

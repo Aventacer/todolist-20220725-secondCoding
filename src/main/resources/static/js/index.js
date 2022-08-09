@@ -4,7 +4,8 @@ const typeSelecteBoxListLis = typeSelectBoxList.querySelectorAll("li");
 const todoContentList = document.querySelector(".todo-content-list");
 const sectionBody = document.querySelector(".section-body");
 const incompleteCountNumber = document.querySelector(".incomplete-count-number");
-
+const modalContainer = document.querySelector(".modal-container");
+const todoAddButton = document.querySelector(".todo-add-button");
 /* 
 순서
 1. 게시글 불러오기
@@ -153,7 +154,7 @@ function substringTodoCode(todoContent){
 	const todoCode = completeCheck.getAttribute("id");
 	const tokenIndex = todoCode.lastIndexOf("-");
 	
-	return todoCode = todoCode.substring(tokenIndex + 1);	
+	return todoCode.substring(tokenIndex + 1);	
 }
 
 function addEvent() {
@@ -252,8 +253,58 @@ for (let i = 0; i < typeSelecteBoxListLis.length; i++) {
 	}
 }
 
+todoAddButton.onclick = () => {
+	alert("todoAddButton");
+	modalContainer.classList.toggle("modal-visible");
+	todoContentList.style.overflow = "hidden";
+	setModalEvent();
+}
 
-////////////////////////// 요청
+function clearModalTodoInputValue(modalTodoInput) {
+	modalTodoInput.value = "";
+}
+
+function uncheckedImportance(importanceFlag){
+	importanceFlag.checked = false;
+}
+
+function setModalEvent() {
+	const modalCloseButton = modalContainer.querySelector(".modal-close-button");
+	const importanceFlag = modalContainer.querySelector(".importance-check");
+	const modalTodoInput = modalContainer.querySelector(".modal-todo-input");
+	const modalCommitButton = modalContainer.querySelector(".modal-commit-button"); 
+	
+	modalContainer.onclick = (e) => {
+		if(e.target == modalContainer){
+			modalCloseButton.click();
+		}
+	}
+
+	modalCloseButton.onclick = () => {
+		modalContainer.classList.toggle("modal-visible");
+		todoContentList.style.overflow = "auto";
+		uncheckedImportance(importanceFlag);
+		clearModalTodoInputValue(modalTodoInput);
+	}
+	
+	modalTodoInput.onkeyup = () => {
+		if(window.event.keyCode == 13){
+			modalCommitButton.click();
+		}
+	}
+
+	modalCommitButton.onclick = () => {
+		data = {
+			importance: importanceFlag.checked,
+			todo: modalTodoInput.Value
+		}
+		addTodo(data);
+		modalCloseButton.click();
+	}
+	
+}
+
+////////////////////////// <<< REQUEST >>> ///////////////////////////////
 
 function load() {
 	$.ajax({
@@ -329,6 +380,25 @@ function deleteTodo(todoContent, todoCode) {
 			}
 		},
 		error: errorMessage
+	})
+}
+
+function addTodo(data){
+	$.ajax({
+		type: "post",
+		url: "api/v1/todolist/todo",
+		currentType: "application/json",
+		data: JSON.stringify(data),
+		async: false,
+		dataType: "json",
+		success: (response) => {
+			if(response.data) {
+				clearTodoContentList();
+		
+				load();
+			}
+		},
+		error:errorMessage
 	})
 }
 

@@ -46,6 +46,23 @@
             </section>
         </main>
     </div>
+    <div class="modal-container modal-visible">
+        <div class="modal-add-todo">
+            <div class="modal-header">
+                <span>Todo 추가</span>
+                <button class="modal-close-button">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="modal-items">
+                <input type="text" class="modal-todo-input">
+                <input type="checkbox" id="importance-check" class="importance-check">
+                <label for="importance-check"></label>
+            </div>
+            <button class="modal-commit-button">확인</button>
+        </div>
+    </div>
+
     <script src="/static/js/index.js"></script>    
 </body>
 </html>

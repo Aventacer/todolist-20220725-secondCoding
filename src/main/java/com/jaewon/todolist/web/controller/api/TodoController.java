@@ -58,16 +58,18 @@ public class TodoController {
 	
 	@PostMapping("/todo")
 	public ResponseEntity<?> addTodo(@RequestBody CreateTodoReqDto createTodoReqDto){
+		boolean status = false;
 		try {
-			if(!todoService.createTodo(createTodoReqDto)) {
+			status = todoService.createTodo(createTodoReqDto);
+			if(!status) {
 				throw new RuntimeException("DataBase Error!");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			return ResponseEntity.internalServerError().body(new CMRespDto<>(-1, "adding todo failed", createTodoReqDto));
+			return ResponseEntity.internalServerError().body(new CMRespDto<>(-1, "adding todo failed", status));
 		}
 		
-		return ResponseEntity.ok().body(new CMRespDto<>(1, "success", createTodoReqDto));
+		return ResponseEntity.ok().body(new CMRespDto<>(1, "success", status));
 	}
 	
 	@PutMapping("/complete/todo/{todoCode}")
